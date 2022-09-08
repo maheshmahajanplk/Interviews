@@ -1,0 +1,14 @@
+
+If you know at compile time the number of objects (std::threads, in this case) that you need, 
+then it is usually a good default choice to use an automatic variable (an array for multiple objects). 
+Automatic objects are allocated on the stack.
+
+An exception to this rule of thumb is a case where the objects are very large in relation 
+to the size of the stack. Big objects need to be allocated dynamically. 
+The size of std::thread on my system is 8 bytes. The exact size of object that need to be 
+allocated dynamically is highly situational, but for vast majority of cases, 
+8 bytes is small enough (by significant margin) to be stored on the stack.
+
+However, if you don't know at compile time how many objects you need, 
+then you would need to resort to dynamic allocation. 
+Typically by using a standard container (std::vector<std::thread> for example).
