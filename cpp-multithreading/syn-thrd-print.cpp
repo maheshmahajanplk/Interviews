@@ -1,59 +1,75 @@
+//thread-1 prints 1
+//thread-2 prints 2
+//likewise each thread print the number and increment it.
+//one-by-one each thread is serialised for the execution
+//Here thread count is dynamic(received at the execution).
+
 #include<iostream>
 #include<string>
 #include<thread>
 #include<mutex>
 #include<condition_variable>
-#include<memory>
+#include<vector>
 using namespace std;
 
 mutex m;
 condition_variable cv;
-int v=0;
-void increament()
+int counter,end_num,max_threads,turn;
+
+/*void increament()
 {
     // Fix #1: Any access to v should be done inside lock
     unique_lock<mutex> lock(m);
-
-    while(v<10)
+    while(counter<end_num)
     {
-        v=v+1;
+        counter=counter+1;
         cv.notify_all();
-
-        // Fix #2: wait for print function
         cv.wait(lock);
     }
-}
+}*/
 
-void print()
+void print(int tid)
 {
-    // See Fix #1
+    
     unique_lock<mutex> lock(m);
-
-    while(v<10)
+    while(counter<end_num)
     {
-        cv.wait(lock);
-        cout << v << " ";
+        while(turn%max_threads!=tid)
+            cv.wait(lock);
+        cout << counter++ << " ";
+        ++turn;
+        if(turn==max_threads)
+            turn=0;
         // Fix #3: no need to unlock here
         cv.notify_all();
+
     }
 }
+
 int main(int argc, char *argv[])
 {
-    if(argc!=2)
+    if(argc!=3)
     {
-        std::cout<<"Usage:<exe> <num-of-threads>"<<std::endl;
+        std::cout<<"Usage:<exe> <num-of-threads> <end-limit-number>"<<std::endl;
         exit(1);
     }
-    int max_threads = stoi(std::string(argv[1]));
-    thread t1(increament);
-    thread t2(print);
-
-    t1.join();
-    t2.join();
-
-    cout<<endl<<"main is here!"<<endl;
+    max_threads = stoi(std::string(argv[1]));
+    end_num     = stoi(std::string(argv[2]));
     
+    std::vector<std::thread> vec;
 
+    for(int i=0;i<max_threads;i++)
+    {
+        vec.push_back(std::thread(print,i));
+    }
+
+    for(auto &th : vec)
+    {
+        if(th.joinable())
+            th.join();
+    }
+    
+    cout<<endl<<"main is here!"<<endl;
     return 0;
 }
 
