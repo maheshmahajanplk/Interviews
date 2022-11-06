@@ -1,0 +1,1 @@
+//copy a linked list containing next_ptr and random_ptr

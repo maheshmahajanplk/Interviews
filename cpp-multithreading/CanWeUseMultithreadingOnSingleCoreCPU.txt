@@ -1,0 +1,15 @@
+Of course it can be done on a single-processor system, and in fact it's much easier that way. 
+It works the same way as running multiple processes -- the kernel, via a timer interrupt or 
+other similar mechanism, suspends one, saving its machine state, and replacing that by the 
+previously-saved state of another -- the only difference being that two threads of the same 
+process share the same virtual memory space, making the task-switch much more efficient.
+
+In a multithreaded process on a single processor, 
+the processor can switch execution resources between threads, 
+resulting in concurrent execution. 
+Concurrency indicates that more than one thread is making progress, 
+but the threads are not actually running simultaneously.
+
+Multi-threading on multi-processor systems is actually much more difficult, 
+since you have issues of simultaneous access to memory from multiple cpus/cores, 
+and all the nasty memory synchronization issues that arise out of that.

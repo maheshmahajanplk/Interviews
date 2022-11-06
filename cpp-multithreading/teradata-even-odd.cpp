@@ -26,7 +26,7 @@ void printOdd(int tid)
 	for(;global<10;)
 	{
 		std::unique_lock<std::mutex> locker(mu);
-		while((global%2) != 1)
+		while((global%2) != 1) //waiting a thread to satify this condition
 		cv.wait(locker);
 		std::cout<< "tid="<<tid<<" global="<<global<<"\n";
 		++global;
